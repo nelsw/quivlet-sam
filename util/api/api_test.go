@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/aws/aws-lambda-go/events"
+	"github.com/nelsw/quivlet-sam/model"
 	"testing"
 )
 
@@ -19,7 +20,7 @@ func TestLog(t *testing.T) {
 func TestResponse(t *testing.T) {
 
 	c := 200
-	r, _ := Response(c, &Problem{
+	r, _ := Response(c, &model.Challenge{
 		Category:         "Vehicles",
 		Type:             "multiple",
 		Difficulty:       "medium",

@@ -1,10 +1,14 @@
-package util
+package model
+
+import (
+	"github.com/nelsw/quivlet-sam/util/random"
+)
 
 const App = "Quivlet"
 
-// names is slice of 500 randomly generated "elf" names
+// Names is slice of 500 randomly generated "elf" names
 // many thanks https://fungenerators.com/api/namegen/
-var names = []string{
+var Names = []string{
 	"Collin Miraleth",
 	"Ghilanna Norneiros",
 	"Jonah Ravahice",
@@ -511,5 +515,5 @@ var names = []string{
 // when presenting end of round statistics on the client.
 // It may also help with a composite key or general uniqueness later on.
 func RandomName() string {
-	return names[RandomInt(0, len(names))]
+	return Names[random.RandomInt(0, len(Names))]
 }

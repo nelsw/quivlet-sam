@@ -1,4 +1,4 @@
-package util
+package model
 
 import (
 	"testing"
@@ -10,5 +10,4 @@ func TestName(t *testing.T) {
 	if name1 == name2 {
 		t.Fail()
 	}
-
 }

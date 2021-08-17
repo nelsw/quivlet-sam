@@ -1,9 +1,12 @@
-package util
+package random
 
-import "testing"
+import (
+	"github.com/nelsw/quivlet-sam/model"
+	"testing"
+)
 
 func TestShuffle(t *testing.T) {
-	temp := names[0:99]
+	temp := model.Names[0:99]
 	n1 := temp[0]
 	Shuffle(temp)
 	n2 := temp[0]
