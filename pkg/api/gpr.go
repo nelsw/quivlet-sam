@@ -9,6 +9,7 @@ import (
 // Required to transmit messages when CORS enabled in API Gateway.
 var headers = map[string]string{"Access-Control-Allow-Origin": "*"}
 
+// Log prints critical request data to Cloud Watch in a human-readable format.
 func Log(r events.APIGatewayProxyRequest) {
 	fmt.Printf("request: {\n"+
 		"\tmethod: %s\n"+

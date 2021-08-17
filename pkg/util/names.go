@@ -1,10 +1,5 @@
 package util
 
-import (
-	"math/rand"
-	"time"
-)
-
 const App = "Quivlet"
 
 // names is slice of 500 randomly generated "elf" names
@@ -512,16 +507,9 @@ var names = []string{
 	"Nanthleene Jojyre",
 }
 
-// init is responsible for seeding random numbers package.
-// Without a unique seed, our RandomName method will return
-// the same name in perpetuity.
-func init() {
-	rand.Seed(time.Now().UnixNano())
-}
-
 // RandomName returns a random elf name to avoid "AnonymousXXXX"
 // when presenting end of round statistics on the client.
 // It may also help with a composite key or general uniqueness later on.
 func RandomName() string {
-	return names[0+rand.Intn(499-0+1)]
+	return names[RandomInt(0, len(names))]
 }
