@@ -28,7 +28,7 @@ func Log(r events.APIGatewayProxyRequest) {
 func Response(code int, v ...interface{}) (events.APIGatewayProxyResponse, error) {
 	var body string
 	if v != nil && len(v) > 0 {
-		b, _ := json.Marshal(v)
+		b, _ := json.Marshal(v[0])
 		body = string(b)
 	}
 	r := events.APIGatewayProxyResponse{StatusCode: code, Headers: headers, Body: body}

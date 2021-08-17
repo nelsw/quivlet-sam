@@ -6,6 +6,7 @@ import (
 	"github.com/nelsw/quivlet-sam/util/names"
 	"github.com/nelsw/quivlet-sam/util/transform"
 	"github.com/nelsw/quivlet-sam/util/web"
+	"reflect"
 	"time"
 )
 
@@ -27,6 +28,7 @@ type Session struct {
 func (s *Session) NewToken() {
 	s.ID = "id"
 	s.Expiry = time.Now().Add(time.Hour * 6).Unix()
+	s.Token = &Token{}
 	s.Token.New()
 	transform.Unmarshal(web.Get(tokenUrl), s)
 }
@@ -46,7 +48,7 @@ func (s *Session) DeleteToken() {
 }
 
 func (s *Session) Table() *string {
-	return aws.String(names.App + "_Session")
+	return aws.String(names.App + "_" + reflect.TypeOf(s).Elem().Name())
 }
 
 func (s *Session) Key() map[string]*dynamodb.AttributeValue {
@@ -54,7 +56,7 @@ func (s *Session) Key() map[string]*dynamodb.AttributeValue {
 }
 
 func (s *Session) IsEmpty() bool {
-	return s.Token == nil
+	return s.Token == nil || s.Token.Value == ""
 }
 
 func (s *Session) IsNotEmpty() bool {
@@ -62,7 +64,7 @@ func (s *Session) IsNotEmpty() bool {
 }
 
 func (s *Session) IsExpired() bool {
-	return time.Now().After(time.Unix(s.Expiry, 0))
+	return s.Expiry == 0 || time.Now().After(time.Unix(s.Expiry, 0))
 }
 
 func (s *Session) IsNotExpired() bool {

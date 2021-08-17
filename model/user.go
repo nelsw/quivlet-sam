@@ -2,7 +2,6 @@ package model
 
 import (
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/google/uuid"
 	"github.com/nelsw/quivlet-sam/util/names"
 	"reflect"
 )
@@ -11,8 +10,8 @@ import (
 type User struct {
 	*Token
 
-	// ID is a 128 bit (16 byte) Universal Unique Identifier as defined in RFC 4122.
-	ID uuid.UUID `json:"id"`
+	// ID is the string representation of a 128 bit (16 byte) Universal Unique Identifier as defined in RFC 4122.
+	ID string `json:"id"`
 
 	// Name is a self defined or randomly generated username for friendly statistic reporting.
 	Name string `json:"name"`
@@ -23,4 +22,8 @@ type User struct {
 
 func (u *User) Table() *string {
 	return aws.String(names.App + "_" + reflect.TypeOf(u).Elem().Name())
+}
+
+func (u *User) SaveUser() {
+	Save(u)
 }

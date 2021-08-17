@@ -1,37 +1,38 @@
 package main
 
 import (
-	"encoding/json"
 	"github.com/aws/aws-lambda-go/events"
-	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 	"github.com/google/uuid"
 	"github.com/nelsw/quivlet-sam/model"
 	"github.com/nelsw/quivlet-sam/util/api"
 	"github.com/nelsw/quivlet-sam/util/names"
+	"github.com/nelsw/quivlet-sam/util/transform"
 )
 
+// HandleRequest is responsible for
+// 1. associating a model.User with a model.Session
+// 2. saving the nanosecond duration required to solve a model.Challenge
 func HandleRequest(r events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 
 	api.Log(r)
 
 	u := &model.User{}
-	_ = json.Unmarshal([]byte(r.Body), &u)
+	transform.UnmarshalStr(r.Body, &u)
 
-	if u.ID.String() == "" { // this u is new, assign them an ID
-		u.ID = uuid.New() // and add them to a slice of contents participants(?)
+	// if this user doesn't have a token, invite them to a session
+	if u.Token == nil {
+		out := model.Call("sessionHandler")
+		var ss []model.Session
+		transform.UnmarshalStr(out.Body, &ss)
+		u.Token = ss[0].Token
+		u.ID = uuid.New().String() // set a new uuid to create a composite key
 	}
 
+	// we MAY allow users to change their name during a session, if dev time permits.
 	if u.Name == "" {
 		u.Name = names.RandomName() // give them a moniker for round statistics
 	}
 
-	item, _ := dynamodbattribute.MarshalMap(&u)
-	_, err := model.DB.PutItem(&dynamodb.PutItemInput{Item: item, TableName: u.Table()})
-
-	if err != nil {
-		return api.Response(500, err)
-	}
-
-	return api.Response(200)
+	u.SaveUser()
+	return api.Response(200, &u)
 }

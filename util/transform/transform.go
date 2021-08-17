@@ -20,3 +20,8 @@ func ToBase64(s string) string {
 func Unmarshal(b []byte, v interface{}) {
 	_ = json.Unmarshal(b, v)
 }
+
+// UnmarshalStr is a convenience method for unmarshalling a string into the given struct.
+func UnmarshalStr(s string, v interface{}) {
+	_ = json.Unmarshal([]byte(s), v)
+}
