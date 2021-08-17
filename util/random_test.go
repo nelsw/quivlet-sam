@@ -1,4 +1,4 @@
-package random
+package util
 
 import (
 	"github.com/nelsw/quivlet-sam/model"
