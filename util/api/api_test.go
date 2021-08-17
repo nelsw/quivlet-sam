@@ -1,4 +1,4 @@
-package util
+package api
 
 import (
 	"github.com/aws/aws-lambda-go/events"

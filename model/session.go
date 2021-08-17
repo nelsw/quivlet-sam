@@ -1,10 +1,10 @@
 package model
 
 import (
-	"encoding/json"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
+	"github.com/nelsw/quivlet-sam/util/names"
+	"github.com/nelsw/quivlet-sam/util/transform"
 	"github.com/nelsw/quivlet-sam/util/web"
 	"time"
 )
@@ -21,20 +21,32 @@ type Session struct {
 	Expiry int64 `json:"expiry,omitempty"`
 }
 
-// SaveNewToken sets the expiry of our future token first to hedge our time bets,
+// NewToken sets the expiry of our future token first to hedge our time bets,
 // retrieves a new token from an API call to the opentdb session token request endpoint,
-// then sets said token on the session before finally persisting the new session to dynamo.
-func (s *Session) SaveNewToken() {
+// then sets said token on the session.
+func (s *Session) NewToken() {
 	s.ID = "id"
 	s.Expiry = time.Now().Add(time.Hour * 6).Unix()
 	s.Token.New()
-	_ = json.Unmarshal(web.Get(tokenUrl), s)
-	item, _ := dynamodbattribute.MarshalMap(s)
-	_, _ = DB.PutItem(&dynamodb.PutItemInput{Item: item, TableName: s.Table()})
+	transform.Unmarshal(web.Get(tokenUrl), s)
+}
+
+func FindToken() *Session {
+	s := new(Session)
+	Find(s)
+	return s
+}
+
+func (s *Session) SaveToken() {
+	Save(s)
+}
+
+func (s *Session) DeleteToken() {
+	Delete(s)
 }
 
 func (s *Session) Table() *string {
-	return aws.String(App + "_Session")
+	return aws.String(names.App + "_Session")
 }
 
 func (s *Session) Key() map[string]*dynamodb.AttributeValue {

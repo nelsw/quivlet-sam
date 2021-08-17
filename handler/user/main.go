@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/nelsw/quivlet-sam/model"
 	"github.com/nelsw/quivlet-sam/util/api"
+	"github.com/nelsw/quivlet-sam/util/names"
 )
 
 func HandleRequest(r events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
@@ -22,7 +23,7 @@ func HandleRequest(r events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	}
 
 	if u.Name == "" {
-		u.Name = model.RandomName() // give them a moniker for round statistics
+		u.Name = names.RandomName() // give them a moniker for round statistics
 	}
 
 	item, _ := dynamodbattribute.MarshalMap(&u)

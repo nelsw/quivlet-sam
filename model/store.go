@@ -1,7 +1,6 @@
 package model
 
 import (
-	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
@@ -26,18 +25,21 @@ type Storable interface {
 	Table() *string
 }
 
-type Findable interface {
+type Manageable interface {
 	Storable
 	Key() map[string]*dynamodb.AttributeValue
 }
 
-func Find(f Findable) {
-	out, err := DB.GetItem(&dynamodb.GetItemInput{TableName: f.Table(), Key: f.Key()})
-	if err != nil {
-		fmt.Println(err)
-	}
+func Find(m Manageable) {
+	out, _ := DB.GetItem(&dynamodb.GetItemInput{TableName: m.Table(), Key: m.Key()})
+	_ = dynamodbattribute.UnmarshalMap(out.Item, &m)
+}
 
-	if err = dynamodbattribute.UnmarshalMap(out.Item, &f); err != nil {
-		fmt.Println(err)
-	}
+func Save(s Storable) {
+	item, _ := dynamodbattribute.MarshalMap(s)
+	_, _ = DB.PutItem(&dynamodb.PutItemInput{Item: item, TableName: s.Table()})
+}
+
+func Delete(m Manageable) {
+	_, _ = DB.DeleteItem(&dynamodb.DeleteItemInput{Key: m.Key()})
 }

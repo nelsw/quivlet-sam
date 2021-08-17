@@ -3,6 +3,7 @@ package model
 import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/google/uuid"
+	"github.com/nelsw/quivlet-sam/util/names"
 	"reflect"
 )
 
@@ -21,5 +22,5 @@ type User struct {
 }
 
 func (u *User) Table() *string {
-	return aws.String(App + "_" + reflect.TypeOf(u).String())
+	return aws.String(names.App + "_" + reflect.TypeOf(u).Elem().Name())
 }
