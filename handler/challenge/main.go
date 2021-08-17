@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/nelsw/quivlet-sam/model"
 	"github.com/nelsw/quivlet-sam/util/api"
 	"github.com/nelsw/quivlet-sam/util/random"
@@ -42,4 +43,8 @@ func HandleRequest(r events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 
 	return api.Response(200, &c)
 
+}
+
+func main() {
+	lambda.Start(HandleRequest)
 }

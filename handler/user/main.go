@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/google/uuid"
 	"github.com/nelsw/quivlet-sam/model"
 	"github.com/nelsw/quivlet-sam/util/api"
@@ -35,4 +36,8 @@ func HandleRequest(r events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 
 	u.SaveUser()
 	return api.Response(200, &u)
+}
+
+func main() {
+	lambda.Start(HandleRequest)
 }
