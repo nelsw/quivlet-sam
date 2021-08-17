@@ -16,7 +16,9 @@ func HandleRequest(r events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 
 	// if the session is active, we must have at least 2 users who have joined the session
 	if s.IsNotEmpty() && s.IsNotExpired() {
-		// todo - create the first challenge if it doesn't already exist
+		// prepare the first challenge
+		ck := &model.ChallengeKey{s.Token, model.NewIndex(0)}
+		_ = model.Call("challengeHandler", &ck)
 		// let's give potential future participants another minute to join
 		s.Expiry = time.Now().Add(time.Minute).Unix()
 		return api.Response(200, &s)

@@ -22,9 +22,9 @@ func HandleRequest(r events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	// if this user doesn't have a token, invite them to a session
 	if u.Token == nil {
 		out := model.Call("sessionHandler")
-		var ss []model.Session
-		transform.UnmarshalStr(out.Body, &ss)
-		u.Token = ss[0].Token
+		var s model.Session
+		transform.UnmarshalStr(out.Body, &s)
+		u.Token = s.Token
 		u.ID = uuid.New().String() // set a new uuid to create a composite key
 	}
 

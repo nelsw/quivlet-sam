@@ -25,3 +25,8 @@ func Unmarshal(b []byte, v interface{}) {
 func UnmarshalStr(s string, v interface{}) {
 	_ = json.Unmarshal([]byte(s), v)
 }
+
+func Marshal(v interface{}) []byte {
+	b, _ := json.Marshal(v)
+	return b
+}
