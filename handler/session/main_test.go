@@ -28,8 +28,8 @@ func TestHandleRequest_LiveSession(t *testing.T) {
 }
 
 func TestHandleRequest_NoSession(t *testing.T) {
-	s := model.FindToken()
-	s.DeleteToken()
+	s := model.FindSession()
+	s.DeleteSession()
 	in := events.APIGatewayProxyRequest{
 		Resource:                        "",
 		Path:                            "",

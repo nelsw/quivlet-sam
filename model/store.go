@@ -47,8 +47,35 @@ func Save(s Storable) {
 	fmt.Println(err)
 }
 
+func SaveUser(s *User) {
+	item, _ := dynamodbattribute.MarshalMap(s)
+	_, err := db.PutItem(&dynamodb.PutItemInput{Item: item, TableName: s.Table()})
+	fmt.Println(err)
+}
+
 func Delete(m Manageable) {
 	_, _ = db.DeleteItem(&dynamodb.DeleteItemInput{Key: m.Key()})
+}
+
+func FindUsers(token string) *[]User {
+	u := &User{}
+	queryInput := dynamodb.QueryInput{
+		TableName: u.Table(),
+		KeyConditions: map[string]*dynamodb.Condition{
+			"token": {
+				ComparisonOperator: aws.String("EQ"),
+				AttributeValueList: []*dynamodb.AttributeValue{
+					{
+						S: aws.String(token),
+					},
+				},
+			},
+		},
+	}
+	out, _ := db.Query(&queryInput)
+	var users []User
+	_ = dynamodbattribute.UnmarshalListOfMaps(out.Items, &users)
+	return &users
 }
 
 func Call(f string, i ...interface{}) events.APIGatewayProxyResponse {

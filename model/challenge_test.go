@@ -3,8 +3,10 @@ package model
 import "testing"
 
 func TestNewChallenge(t *testing.T) {
-	p1 := NewChallenge(token.Value)
-	p2 := NewChallenge(token.Value)
+	s := Session{}
+	s.NewSession()
+	p1 := NewChallenge(s.Token)
+	p2 := NewChallenge(s.Token)
 	if p1.Question == p2.Question {
 		t.Fail()
 	}

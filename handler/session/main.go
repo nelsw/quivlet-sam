@@ -12,29 +12,34 @@ func HandleRequest(r events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 
 	api.Log(r)
 
-	s := model.FindToken()
+	s := model.FindSession()
 
-	// if the session is active, we must have at least 2 users who have joined the session
-	if s.IsNotEmpty() && s.IsNotExpired() {
-		// prepare the first challenge
-		ck := &model.ChallengeKey{s.Token, model.NewIndex(0)}
-		_ = model.Call("challengeHandler", &ck)
-		// let's give potential future participants another minute to join
-		s.Expiry = time.Now().Add(time.Minute).Unix()
+	if r.QueryStringParameters["find"] == "id" {
+		//return api.Response(200, &s)
+	}
+
+	if s.IsExpired() || r.QueryStringParameters["refresh"] == "id" {
+		s.DeleteSession()
+		s.NewSession()
+		s.SaveSession()
 		return api.Response(200, &s)
 	}
 
-	// if the session table is empty ...
-	if s.IsEmpty() {
-		s.NewToken()
-		s.SaveToken()
+	sessionSize := len(*model.FindUsers(s.Token))
+
+	if sessionSize > 1 {
+		// give future users ≈2 more minutes to join
+		s.Expiry = time.Now().Add(time.Minute * 1).Truncate(time.Minute).Unix()
+		s.SaveSession()
 		return api.Response(200, &s)
 	}
 
-	// else this user missed the session deadline
-	s.DeleteToken()
-	s.NewToken()
-	s.SaveToken()
+	if sessionSize > 0 {
+		// PUT a new challenge in the db to initiate the contest
+		_ = model.Call("challengeHandler", &model.Challenge{Token: s.Token, Index: 0})
+		return api.Response(200, &s)
+	}
+
 	return api.Response(200, &s)
 }
 

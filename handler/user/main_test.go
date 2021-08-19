@@ -14,7 +14,7 @@ func TestHandleRequest(t *testing.T) {
 		HTTPMethod:                      "",
 		Headers:                         nil,
 		MultiValueHeaders:               nil,
-		QueryStringParameters:           nil,
+		QueryStringParameters:           map[string]string{"find": "all"},
 		MultiValueQueryStringParameters: nil,
 		PathParameters:                  nil,
 		StageVariables:                  nil,

@@ -8,7 +8,9 @@ import (
 
 // User is the identity associated with a Quivlet contestant.
 type User struct {
-	*Token
+
+	// Token is a unique 64 character alphanumeric string and identifier of a single Quivlet session.
+	Token string `json:"token"`
 
 	// ID is the string representation of a 128 bit (16 byte) Universal Unique Identifier as defined in RFC 4122.
 	ID string `json:"id"`
@@ -16,8 +18,13 @@ type User struct {
 	// Name is a self defined or randomly generated username for friendly statistic reporting.
 	Name string `json:"name"`
 
-	// Nanos is a slice where each entry is equal to the amount of nanoseconds used to correctly answer a challenge.
-	Nanos []int64 `json:"nanos"`
+	// Result is a slice of int64's where each value represents a correctly answered challenge in a certain time period.
+	Result []int64 `json:"result"`
+
+	// Eliminated is used to flag a user that answered a challenge incorrectly and no longer part of the contest.
+	Eliminated bool `json:"eliminated"`
+
+	Save bool
 }
 
 func (u *User) Table() *string {
@@ -25,5 +32,5 @@ func (u *User) Table() *string {
 }
 
 func (u *User) SaveUser() {
-	Save(u)
+	SaveUser(u)
 }

@@ -20,22 +20,35 @@ func HandleRequest(r events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 	u := &model.User{}
 	transform.UnmarshalStr(r.Body, &u)
 
-	// if this user doesn't have a token, invite them to a session
-	if u.Token == nil {
+	if r.QueryStringParameters["find"] == "all" {
+		users := model.FindUsers(u.Token)
+		return api.Response(200, &users)
+	}
+
+	if !u.Save {
+		return api.Response(200)
+	}
+
+	if r.QueryStringParameters["new"] == "id" {
 		out := model.Call("sessionHandler")
 		var s model.Session
 		transform.UnmarshalStr(out.Body, &s)
 		u.Token = s.Token
 		u.ID = uuid.New().String() // set a new uuid to create a composite key
+		if u.Name == "" {
+			u.Name = names.RandomName() // give them a moniker for round statistics
+		}
+		model.SaveUser(u)
+		return api.Response(200, &u)
 	}
 
-	// we MAY allow users to change their name during a session, if dev time permits.
-	if u.Name == "" {
-		u.Name = names.RandomName() // give them a moniker for round statistics
+	// if we're here, we're either a new user, or simply persisting user data
+	if r.QueryStringParameters["save"] == "id" {
+		model.SaveUser(u)
+		return api.Response(200, &u)
 	}
 
-	u.SaveUser()
-	return api.Response(200, &u)
+	return api.Response(400)
 }
 
 func main() {

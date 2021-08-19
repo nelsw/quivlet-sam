@@ -24,9 +24,19 @@ func HandleRequest(r events.APIGatewayProxyRequest) (events.APIGatewayProxyRespo
 		return api.Response(200, &c)
 	}
 
-	ck := c.ChallengeKey
-	c = model.NewChallenge(c.Token.Value)
-	c.ChallengeKey = ck
+	token := c.Token
+	index := c.Index
+	c.FindChallenge()
+	if c.Question != "" {
+		c.IncorrectAnswers = append(c.IncorrectAnswers, c.CorrectAnswer)
+		random.Shuffle(c.IncorrectAnswers)
+		c.CorrectAnswer = ""
+		return api.Response(200, &c)
+	}
+
+	c = model.NewChallenge(token)
+	c.Token = token
+	c.Index = index
 	c.Category = transform.FromBase64(c.Category)
 	c.Type = transform.FromBase64(c.Type)
 	c.Difficulty = transform.FromBase64(c.Difficulty)

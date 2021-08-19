@@ -11,6 +11,9 @@ var headers = map[string]string{"Access-Control-Allow-Origin": "*"}
 
 // Log prints critical request data to Cloud Watch in a human-readable format.
 func Log(r events.APIGatewayProxyRequest) {
+	b, _ := json.Marshal(&r)
+	s := string(b)
+	fmt.Println(s)
 	fmt.Printf("request: {\n"+
 		"\tmethod: %s\n"+
 		"\tresource: %s\n"+

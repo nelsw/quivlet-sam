@@ -1,7 +1,9 @@
 package names
 
 import (
+	"fmt"
 	"testing"
+	"time"
 )
 
 func TestName(t *testing.T) {
@@ -10,4 +12,5 @@ func TestName(t *testing.T) {
 	if name1 == name2 {
 		t.Fail()
 	}
+	fmt.Println(time.Now().Truncate(time.Minute))
 }

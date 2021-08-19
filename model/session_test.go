@@ -15,12 +15,12 @@ func TestSession_Table(t *testing.T) {
 }
 
 func TestSession_DeleteToken(t *testing.T) {
-	s.DeleteToken()
+	s.DeleteSession()
 }
 
 func TestSession_NewToken(t *testing.T) {
 	oldExpiry := s.Expiry
-	s.NewToken()
+	s.NewSession()
 	if oldExpiry == s.Expiry {
 		t.Fail()
 	}
@@ -29,16 +29,16 @@ func TestSession_NewToken(t *testing.T) {
 func TestSession_SaveToken(t *testing.T) {
 	oldExpiry := s.Expiry
 	s.Expiry = time.Unix(oldExpiry, 0).Add(time.Minute).Unix()
-	s.SaveToken()
+	s.SaveSession()
 	if oldExpiry == s.Expiry {
 		t.Fail()
 	}
 }
 
 func TestFindToken(t *testing.T) {
-	oldValue := FindToken().Value
-	s.NewToken()
-	newValue := s.Value
+	oldValue := FindSession()
+	s.NewSession()
+	newValue := s
 	if oldValue == newValue {
 		t.Fail()
 	}

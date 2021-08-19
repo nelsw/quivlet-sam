@@ -9,10 +9,9 @@ import (
 )
 
 func TestHandleRequest(t *testing.T) {
-	c := model.Challenge{}
-	c.ChallengeKey = &model.ChallengeKey{
-		Token: model.FindToken().Token,
-		Index: model.NewIndex(0),
+	c := model.Challenge{
+		Token: model.FindSession().Token,
+		Index: 0,
 	}
 	b := transform.Marshal(&c)
 	s := string(b)
